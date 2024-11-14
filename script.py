@@ -1,3 +1,4 @@
+import csv
 import random
 import requests
 
@@ -82,7 +83,6 @@ def get_internal_links_count(article_title):
     else:
         return 0  # In case of errors or pages with no internal links
 
-
 # main function to collect data for multiple samples
 def collect_data(num_samples=100):
     results = []
@@ -105,7 +105,7 @@ def collect_data(num_samples=100):
             internal_links_count = get_internal_links_count(article_title=page_title)
 
             results.append({
-                'page_title': page_title, 
+                'page_title': f"\"{page_title}\"", 
                 'date': random_date, 
                 'page_views': views, 
                 'links_count': internal_links_count
@@ -113,7 +113,15 @@ def collect_data(num_samples=100):
     
     return results
 
+# save the collected data to a CSV file
+def save_to_csv(data, filename="wikipedia_data.csv"):
+    keys = data[0].keys()  # Extract header keys from the first item in the list
+    with open(filename, mode="w", newline='', encoding="utf-8") as file:
+        writer = csv.DictWriter(file, fieldnames=keys)
+        writer.writeheader()  # Write the header
+        writer.writerows(data)  # Write the data rows
+
 # run the data collection for some number of samples
 if __name__ == "__main__":
-    samples = collect_data(100)
-    print(samples)
+    samples = collect_data(10)
+    save_to_csv(samples, "raw_data.csv")
