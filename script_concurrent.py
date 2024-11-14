@@ -139,6 +139,6 @@ def timer_wrapper(fn):
 
 # run the data collection for some number of samples
 if __name__ == "__main__":
-    N = 1000 # number of samples
+    N = 12000 # number of samples
     timer_wrapper(lambda: save_to_csv(collect_data(N), "raw_data.csv"))
     
