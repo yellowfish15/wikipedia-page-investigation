@@ -31,7 +31,8 @@ def generate_random_date():
 
 # get a list of 'rnlimit' random article titles
 # rnlimit specifies how many random pages to return
-def get_random_articles(rnlimit=100):
+# rnnamespace specifies to only retrieve a specific type of namespace (if -1, allow all namespaces)
+def get_random_articles(rnlimit=100, rnnamespace=-1):
     # rnlimit must be between [1, 500]
     if rnlimit > 500:
         rnlimit = 500
@@ -41,8 +42,11 @@ def get_random_articles(rnlimit=100):
         "action": "query",
         "format": "json",
         "list": "random",
-        "rnlimit": rnlimit
+        "rnlimit": rnlimit,
     }
+    if rnnamespace != -1:
+        params["rnnamespace"] = rnnamespace
+    
     response = requests.get(WIKIPEDIA_API_URL, params=params, headers=HEADERS)
     data = response.json()
     return data['query']['random']
@@ -84,7 +88,7 @@ def collect_data(num_samples=100):
     results = []
 
     while len(results) < num_samples:
-        pages = get_random_articles(rnlimit=(num_samples-len(results)))
+        pages = get_random_articles(rnlimit=(num_samples-len(results)), rnnamespace=0)
         for page in pages:
             # we are only interested in main articles, or ns=0 (https://en.wikipedia.org/wiki/Wikipedia:Namespace)
             if not page['ns'] == 0:
@@ -111,5 +115,5 @@ def collect_data(num_samples=100):
 
 # run the data collection for some number of samples
 if __name__ == "__main__":
-    samples = collect_data(10)
+    samples = collect_data(100)
     print(samples)
